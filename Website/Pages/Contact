@@ -1,0 +1,273 @@
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { SendEmail } from "@/integrations/Core";
+import { Mail, Youtube, MapPin, Clock, Send, CheckCircle } from "lucide-react";
+
+export default function Contact() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: ""
+  });
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSending(true);
+
+    try {
+      await SendEmail({
+        to: "your-email@example.com", // Replace with your actual email
+        subject: `Contact Form: ${formData.subject}`,
+        body: `
+Name: ${formData.name}
+Email: ${formData.email}
+Subject: ${formData.subject}
+
+Message:
+${formData.message}
+        `
+      });
+      
+      setSent(true);
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
+    
+    setSending(false);
+  };
+
+  const contactInfo = [
+    {
+      icon: Youtube,
+      title: "YouTube Channel",
+      description: "Subscribe for latest content",
+      value: "@YourMXChannel",
+      color: "text-red-500"
+    },
+    {
+      icon: Mail,
+      title: "Email",
+      description: "Business inquiries",
+      value: "contact@yourmx.com",
+      color: "text-orange-500"
+    },
+    {
+      icon: MapPin,
+      title: "Location",
+      description: "Based in",
+      value: "Your City, State",
+      color: "text-blue-500"
+    },
+    {
+      icon: Clock,
+      title: "Response Time",
+      description: "Usually within",
+      value: "24-48 hours",
+      color: "text-green-500"
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-900 text-white py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            Get <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">in Touch</span>
+          </h1>
+          <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+            Have questions about motocross? Want to collaborate? Or just want to chat about bikes? 
+            I'd love to hear from you!
+          </p>
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-12">
+          {/* Contact Form */}
+          <Card className="bg-gray-800 border-gray-700">
+            <CardContent className="p-8">
+              {sent ? (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-green-500 mb-2">Message Sent!</h3>
+                  <p className="text-gray-400">
+                    Thanks for reaching out. I'll get back to you within 24-48 hours.
+                  </p>
+                  <Button 
+                    onClick={() => setSent(false)}
+                    variant="outline"
+                    className="mt-6 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+                  >
+                    Send Another Message
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <h2 className="text-2xl font-bold mb-6 flex items-center">
+                    <Send className="w-6 h-6 text-orange-500 mr-3" />
+                    Send a Message
+                  </h2>
+                  
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Your Name *
+                        </label>
+                        <Input
+                          required
+                          value={formData.name}
+                          onChange={(e) => handleInputChange('name', e.target.value)}
+                          className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-orange-500"
+                          placeholder="Your full name"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Email Address *
+                        </label>
+                        <Input
+                          type="email"
+                          required
+                          value={formData.email}
+                          onChange={(e) => handleInputChange('email', e.target.value)}
+                          className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-orange-500"
+                          placeholder="your@email.com"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Subject *
+                      </label>
+                      <Input
+                        required
+                        value={formData.subject}
+                        onChange={(e) => handleInputChange('subject', e.target.value)}
+                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-orange-500"
+                        placeholder="What's this about?"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Message *
+                      </label>
+                      <Textarea
+                        required
+                        value={formData.message}
+                        onChange={(e) => handleInputChange('message', e.target.value)}
+                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-orange-500 h-32"
+                        placeholder="Tell me what's on your mind..."
+                      />
+                    </div>
+                    
+                    <Button
+                      type="submit"
+                      disabled={sending}
+                      className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-3 text-lg font-semibold"
+                    >
+                      {sending ? (
+                        <>
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-5 h-5 mr-2" />
+                          Send Message
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Contact Info & FAQ */}
+          <div className="space-y-8">
+            {/* Contact Info Cards */}
+            <div className="grid gap-6">
+              {contactInfo.map((info, index) => (
+                <Card key={index} className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors duration-300">
+                  <CardContent className="p-6">
+                    <div className="flex items-center space-x-4">
+                      <div className={`w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center`}>
+                        <info.icon className={`w-6 h-6 ${info.color}`} />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold">{info.title}</h3>
+                        <p className="text-gray-400 text-sm">{info.description}</p>
+                        <p className="text-white font-medium">{info.value}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* FAQ Section */}
+            <Card className="bg-gradient-to-br from-orange-500/10 to-red-500/10 border-orange-500/30">
+              <CardContent className="p-6">
+                <h3 className="text-xl font-semibold mb-4 text-orange-500">
+                  Frequently Asked Questions
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium text-white mb-1">Can I feature your content?</h4>
+                    <p className="text-gray-400 text-sm">
+                      Absolutely! Just reach out and let's discuss collaboration opportunities.
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-white mb-1">Do you offer riding lessons?</h4>
+                    <p className="text-gray-400 text-sm">
+                      I occasionally do coaching sessions. Send me a message to discuss availability.
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-white mb-1">What gear do you recommend?</h4>
+                    <p className="text-gray-400 text-sm">
+                      Check out my gear review videos, or feel free to ask specific questions!
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Social CTA */}
+            <Card className="bg-gray-800 border-gray-700">
+              <CardContent className="p-6 text-center">
+                <h3 className="text-xl font-semibold mb-3">Stay Connected</h3>
+                <p className="text-gray-400 mb-4">
+                  Follow my motocross journey and never miss new content
+                </p>
+                <div className="flex justify-center">
+                  <Badge className="bg-red-600 text-white px-4 py-2">
+                    <Youtube className="w-4 h-4 mr-2" />
+                    Subscribe on YouTube
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

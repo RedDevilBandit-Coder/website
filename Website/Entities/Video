@@ -1,0 +1,53 @@
+{
+  "name": "Video",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Video title"
+    },
+    "youtube_id": {
+      "type": "string",
+      "description": "YouTube video ID"
+    },
+    "description": {
+      "type": "string",
+      "description": "Video description"
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "description": "Video thumbnail URL"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "racing",
+        "tutorials",
+        "vlogs",
+        "bike_reviews",
+        "maintenance",
+        "other"
+      ],
+      "default": "other",
+      "description": "Video category"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Featured video"
+    },
+    "view_count": {
+      "type": "number",
+      "description": "Video view count"
+    },
+    "published_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Video publish date"
+    }
+  },
+  "required": [
+    "title",
+    "youtube_id"
+  ]
+}
